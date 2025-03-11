@@ -46,8 +46,11 @@ const ChatMessage = ({ message, isLast }) => {
                   {...props} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-600 underline"
+                  className="text-blue-500 hover:text-blue-600 underline break-words"
                 />
+              ),
+              p: ({ node, ...props }) => (
+                <p {...props} className="break-words" />
               ),
             }}
           >

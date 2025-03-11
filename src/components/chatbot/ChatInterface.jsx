@@ -129,7 +129,8 @@ const ChatInterface = () => {
         text: data.response,
         sender: 'bot',
         timestamp: new Date(),
-        needsEvaluation: true
+        needsEvaluation: true,
+        fromChatRoute: true
       };
       
       // Ajouter des propriétés supplémentaires si elles existent
@@ -205,7 +206,8 @@ const ChatInterface = () => {
                 id: Date.now() + sortedBubbles.indexOf(bubble),
                 text: bubble.Text,
                 sender: 'bot',
-                timestamp: new Date()
+                timestamp: new Date(),
+                fromFindByLabelRoute: true
               };
               
               if (bubble.Image) botMessage.image = bubble.Image;
@@ -286,6 +288,14 @@ const ChatInterface = () => {
       // Marquer le dernier message comme évalué
       setLastMessageEvaluated(true);
       
+      // Mettre à jour le message pour retirer l'indicateur d'évaluation nécessaire
+      setMessages(prev => prev.map((msg, idx) => {
+        if (idx === prev.length - 1 && msg.needsEvaluation) {
+          return { ...msg, needsEvaluation: false };
+        }
+        return msg;
+      }));
+      
     } catch (error) {
       console.error('Erreur lors de l\'évaluation:', error);
     }
@@ -333,14 +343,14 @@ const ChatInterface = () => {
             transition={{ type: "spring", damping: 20 }}
           >
             <div className="chatbot-header">
-              <div className="flex items-center">
-                <Image 
+              <div className="flex items-center gap-2">
+              <img 
                   src="/Osi.png" 
                   alt="OSI Avatar" 
-                  width={32} 
-                  height={32} 
-                  className="rounded-full mr-2"
-                />
+                  width="40" 
+                  height="35" 
+                  style={{ objectFit: 'contain' }}
+              />
                 <h3 className="font-medium">Offre de services informatique</h3>
               </div>
               <div className="flex items-center gap-2">
@@ -402,8 +412,9 @@ const ChatInterface = () => {
                       />
                     )}
                     
-                    {message.needsEvaluation && 
-                     index === messages.length - 1 && 
+                    {message.sender === 'bot' && 
+                     message.fromChatRoute &&
+                     message.needsEvaluation && 
                      !lastMessageEvaluated && (
                       <MessageEvaluation 
                         key={`eval-${messageKey}`}
@@ -415,15 +426,15 @@ const ChatInterface = () => {
               })}
               
               {isTyping && (
-                <div className="message-with-avatar">
-                  <Image 
+                <div className="message-with-avatar flex items-center gap-2">
+                  <img 
                     src="/Osi.png" 
                     alt="OSI Avatar" 
-                    width={32} 
-                    height={32} 
-                    className="chatbot-avatar"
+                    width={30} 
+                    height={35} 
+                    className="self-center"
                   />
-                  <div className="typing-indicator">
+                  <div className="typing-indicator flex items-center">
                     <div className="typing-dot"></div>
                     <div className="typing-dot"></div>
                     <div className="typing-dot"></div>

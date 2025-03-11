@@ -1,72 +1,105 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 const MessageEvaluation = ({ onEvaluate }) => {
-  const [evaluated, setEvaluated] = useState(false);
-  const [showThanks, setShowThanks] = useState(false);
+  const [state, setState] = useState('buttons'); // 'buttons', 'thankyou', 'hidden'
+  const timeoutRef = useRef(null);
   
-  const handleEvaluate = (rating) => {
-    onEvaluate(rating);
-    setEvaluated(true);
-    setShowThanks(true);
+  const handleEvaluate = async (rating) => {
+    try {
+      setState('thankyou');
+      
+      onEvaluate(rating);
+      
+      timeoutRef.current = setTimeout(() => {
+        setState('hidden');
+      }, 3000);
+    } catch (error) {
+      console.error("Erreur lors de l'évaluation:", error);
+    }
   };
   
   useEffect(() => {
-    let timer;
-    if (showThanks) {
-      timer = setTimeout(() => {
-        setShowThanks(false);
-      }, 3000);
-    }
-    return () => clearTimeout(timer);
-  }, [showThanks]);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
   
-  if (evaluated && !showThanks) return null;
-  
-  if (evaluated) {
-    return (
-      <motion.div 
-        className="flex justify-start ml-12 -mt-1 mb-1 text-xs text-gray-500 dark:text-gray-400"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        Merci pour votre évaluation !
-      </motion.div>
-    );
+  if (state === 'hidden') {
+    return null;
   }
   
   return (
-    <motion.div 
-      className="flex justify-start ml-12 gap-2 -mt-1 mb-1"
-      initial={{ opacity: 0, y: 5 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <button 
-        className="p-1 rounded-full"
-        onClick={() => handleEvaluate(1)}
-        aria-label="Réponse utile"
-      >
-        <ThumbUpIcon 
-          fontSize="small" 
-          sx={{ fontSize: 20 }} 
-          className="text-gray-600 dark:text-gray-300 transform transition-all ease-in-out duration-300 hover:scale-110 hover:text-green-500" 
-        />
-      </button>
-      <button 
-        className="p-1 rounded-full"
-        onClick={() => handleEvaluate(0)}
-        aria-label="Réponse non utile"
-      >
-        <ThumbDownIcon 
-          fontSize="small" 
-          sx={{ fontSize: 20 }} 
-          className="text-gray-600 dark:text-gray-300 transform transition-all ease-in-out duration-300 hover:scale-110 hover:text-red-500" 
-        />
-      </button>
-    </motion.div>
+    <div className="flex justify-start ml-12 gap-2 -mt-1 mb-1">
+      <AnimatePresence mode="wait">
+        {state === 'buttons' && (
+          <motion.div 
+            key="evaluation-buttons"
+            className="flex gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <button 
+              className="p-1 rounded-full transition-colors duration-300"
+              onClick={() => handleEvaluate(1)}
+              aria-label="Réponse utile"
+            >
+              <ThumbUpIcon 
+                fontSize="small" 
+                sx={{ 
+                  fontSize: 20,
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': { 
+                    color: '#10B981', 
+                    transform: 'scale(1.1)' 
+                  }
+                }} 
+                className="text-gray-600 dark:text-gray-300" 
+              />
+            </button>
+            <button 
+              className="p-1 rounded-full transition-colors duration-300"
+              onClick={() => handleEvaluate(0)}
+              aria-label="Réponse non utile"
+            >
+              <ThumbDownIcon 
+                fontSize="small" 
+                sx={{ 
+                  fontSize: 20,
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': { 
+                    color: '#EF4444', 
+                    transform: 'scale(1.1)' 
+                  }
+                }} 
+                className="text-gray-600 dark:text-gray-300" 
+              />
+            </button>
+          </motion.div>
+        )}
+        
+        {state === 'thankyou' && (
+          <motion.div 
+            key="thank-you-message"
+            className="flex items-center gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              Merci pour votre retour !
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
