@@ -2,16 +2,19 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThankYouMessage from './ThankYouMessage';
 
 const MessageEvaluation = ({ onEvaluate }) => {
   const [state, setState] = useState('buttons'); // 'buttons', 'thankyou', 'hidden'
+  const [rating, setRating] = useState(null);
   const timeoutRef = useRef(null);
   
-  const handleEvaluate = async (rating) => {
+  const handleEvaluate = async (value) => {
     try {
+      setRating(value);
       setState('thankyou');
       
-      onEvaluate(rating);
+      onEvaluate(value);
       
       timeoutRef.current = setTimeout(() => {
         setState('hidden');
@@ -87,15 +90,12 @@ const MessageEvaluation = ({ onEvaluate }) => {
         {state === 'thankyou' && (
           <motion.div 
             key="thank-you-message"
-            className="flex items-center gap-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Merci pour votre retour !
-            </span>
+            <ThankYouMessage rating={rating} />
           </motion.div>
         )}
       </AnimatePresence>
