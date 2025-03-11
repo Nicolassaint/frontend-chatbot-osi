@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![OSI - Chatbot](public/Osi.png)
+# OSI - Chatbot de l'Offre de Services Informatique
 
-## Getting Started
 
-First, run the development server:
+Ce projet est une application **Next.js** proposant un chatbot interactif destiné à l'offre de services informatique de l'Administration Centrale.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Fonctionnalités
+
+- 💬 **Interface de chat interactive** avec **OSI**, l'assistant virtuel.
+- 🌙 **Mode sombre/clair** pour un meilleur confort visuel.
+- 📱 **Interface responsive** (mobile et desktop).
+- 🎬 **Animations fluides** pour une expérience utilisateur améliorée.
+- ⭐ **Évaluation des réponses** du chatbot.
+- 🖼️ **Affichage de messages, images et vidéos**.
+- 🔘 **Boutons interactifs** facilitant la navigation.
+
+## 🛠️ Technologies utilisées
+
+- [Next.js](https://nextjs.org/) - Framework React pour des applications performantes.
+- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS utilitaire.
+- [Framer Motion](https://www.framer.com/motion/) - Bibliothèque d'animations.
+- [React Markdown](https://github.com/remarkjs/react-markdown) - Rendu Markdown.
+- [Material-UI Icons](https://mui.com/material-ui/material-icons/) - Icônes pour l'interface utilisateur.
+
+---
+
+## ⚙️ Installation et démarrage
+
+### 📌 Prérequis
+
+- **Node.js** (version 14 ou supérieure)
+- **npm**, **yarn**, **pnpm** ou **bun**
+
+### 📥 Installation
+
+1. **Clonez le dépôt** :
+   ```sh
+   git clone <url-du-repo>
+   cd <nom-du-repo>
+   ```
+
+2. **Installez les dépendances** :
+   ```sh
+   npm install
+   ```
+   ou
+   ```sh
+   yarn install
+   ```
+
+3. **Créez un fichier `.env.local`** à la racine du projet avec les variables suivantes :
+   ```sh
+   NEXT_PUBLIC_API_OSI=<url-de-votre-api>
+   NEXT_PUBLIC_API_TOKEN_OSI=<votre-token-api>
+   ```
+
+4. **Lancez le serveur de développement** :
+   ```sh
+   npm run dev
+   ```
+   ou
+   ```sh
+   yarn dev
+   ```
+
+5. **Ouvrez votre navigateur** et accédez à [http://localhost:3000](http://localhost:3000).
+
+---
+
+## 📁 Structure du projet
+
+```
+📂 src
+ ├── 📂 app              # Pages et configuration de l'application
+ ├── 📂 components       # Composants React réutilisables
+ │   ├── 📂 chatbot      # Composants spécifiques au chatbot
+ ├── 📂 context         # Contextes React (ex: ThemeContext)
+📂 public                # Fichiers statiques (images, etc.)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🚀 Déploiement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Le moyen le plus simple de déployer cette application est d'utiliser **[Vercel](https://vercel.com/)**, la plateforme des créateurs de **Next.js**.
 
-## Learn More
+Consultez la **[documentation officielle de déploiement](https://nextjs.org/docs/deployment)** pour plus de détails.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 Personnalisation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Vous pouvez modifier l'apparence du chatbot en éditant les styles CSS dans **`src/app/globals.css`**. Les principales couleurs et thèmes sont définis dans les **variables CSS** à la racine du document.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🛠️ **Développé avec passion ❤️ par [Votre Nom ou Organisation]**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
