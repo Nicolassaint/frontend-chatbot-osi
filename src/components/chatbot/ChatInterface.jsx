@@ -285,16 +285,16 @@ const ChatInterface = () => {
         throw new Error('Erreur lors de l\'évaluation');
       }
       
-      // Marquer le dernier message comme évalué
-      setLastMessageEvaluated(true);
-      
-      // Mettre à jour le message pour retirer l'indicateur d'évaluation nécessaire
-      setMessages(prev => prev.map((msg, idx) => {
-        if (idx === prev.length - 1 && msg.needsEvaluation) {
-          return { ...msg, needsEvaluation: false };
-        }
-        return msg;
-      }));
+      // Attendre que le composant MessageEvaluation ait terminé son animation
+      setTimeout(() => {
+        setLastMessageEvaluated(true);
+        setMessages(prev => prev.map((msg, idx) => {
+          if (idx === prev.length - 1 && msg.needsEvaluation) {
+            return { ...msg, needsEvaluation: false };
+          }
+          return msg;
+        }));
+      }, 3500); // Délai légèrement supérieur à celui du composant MessageEvaluation (3000ms)
       
     } catch (error) {
       console.error('Erreur lors de l\'évaluation:', error);
