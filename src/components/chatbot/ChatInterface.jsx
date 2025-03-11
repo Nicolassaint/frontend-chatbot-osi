@@ -53,6 +53,24 @@ const ChatInterface = () => {
   const toggleExpand = () => {
     if (!isMobile()) {
       setIsExpanded(!isExpanded);
+      
+      // Assurons-nous que la fenêtre agrandie reste dans les limites de l'écran
+      if (!isExpanded) {
+        // Ajuster la taille en fonction de la taille de l'écran
+        const chatWindow = document.querySelector('.chatbot-window');
+        if (chatWindow) {
+          const viewportHeight = window.innerHeight;
+          const viewportWidth = window.innerWidth;
+          
+          // Limiter la hauteur à 80% de la hauteur de la fenêtre
+          const maxHeight = Math.min(800, viewportHeight * 0.8);
+          chatWindow.style.setProperty('--expanded-height', `${maxHeight}px`);
+          
+          // Limiter la largeur à 90% de la largeur de la fenêtre
+          const maxWidth = Math.min(1000, viewportWidth * 0.9);
+          chatWindow.style.setProperty('--expanded-width', `${maxWidth}px`);
+        }
+      }
     }
   };
 
@@ -69,6 +87,73 @@ const ChatInterface = () => {
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  // Ajoutons un effet pour ajuster la taille au redimensionnement de la fenêtre
+  useEffect(() => {
+    const handleResize = () => {
+      if (isExpanded) {
+        const chatWindow = document.querySelector('.chatbot-window');
+        if (chatWindow) {
+          const viewportHeight = window.innerHeight;
+          const viewportWidth = window.innerWidth;
+          
+          const maxHeight = Math.min(800, viewportHeight * 0.8);
+          chatWindow.style.setProperty('--expanded-height', `${maxHeight}px`);
+          
+          const maxWidth = Math.min(1000, viewportWidth * 0.9);
+          chatWindow.style.setProperty('--expanded-width', `${maxWidth}px`);
+        }
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isExpanded]);
+
+  // Ajoutons un effet pour ajuster la hauteur de la zone de messages sur mobile
+  useEffect(() => {
+    const adjustMobileLayout = () => {
+      if (isMobile()) {
+        const chatWindow = document.querySelector('.chatbot-window');
+        if (chatWindow) {
+          const header = chatWindow.querySelector('.chatbot-header');
+          const inputForm = chatWindow.querySelector('form');
+          
+          if (header && inputForm) {
+            const headerHeight = header.offsetHeight;
+            const inputHeight = inputForm.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            // Calculer la hauteur disponible pour la zone de messages
+            const messagesAreaHeight = windowHeight - headerHeight - inputHeight;
+            
+            // Appliquer cette hauteur à la zone de messages
+            const messagesArea = chatWindow.querySelector('.flex-1.overflow-y-auto');
+            if (messagesArea) {
+              messagesArea.style.height = `${messagesAreaHeight}px`;
+              messagesArea.style.maxHeight = `${messagesAreaHeight}px`;
+            }
+          }
+        }
+      }
+    };
+    
+    // Exécuter l'ajustement lors de l'ouverture du chat et au redimensionnement
+    if (isOpen) {
+      adjustMobileLayout();
+      window.addEventListener('resize', adjustMobileLayout);
+    }
+    
+    return () => window.removeEventListener('resize', adjustMobileLayout);
+  }, [isOpen]);
+
+  // Assurons-nous que le scroll fonctionne correctement sur mobile
+  useEffect(() => {
+    if (isOpen && isMobile()) {
+      // Petit délai pour laisser le DOM se mettre à jour
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [isOpen, messages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -390,7 +475,7 @@ const ChatInterface = () => {
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="flex-1 overflow-y-auto px-4 py-4 mobile-messages-container">
               {messages.map((message, index) => {
                 const messageKey = `${message.id}-${index}`; // Création d'une clé unique combinant id et index
                 
@@ -445,7 +530,7 @@ const ChatInterface = () => {
               <div ref={messagesEndRef} />
             </div>
             
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-700 mobile-input-container">
               <div className="flex gap-2">
                 <input
                   type="text"

@@ -139,6 +139,10 @@ body {
   height: 600px;
   transition: width 0.3s ease, height 0.3s ease;
   
+  /* Variables pour les dimensions en mode agrandi */
+  --expanded-width: 1000px;
+  --expanded-height: 800px;
+  
   /* Ajout des styles mobile */
   @media (max-width: 768px) {
     width: 100%;
@@ -150,8 +154,12 @@ body {
 }
 
 .chatbot-window.expanded {
-  width: 1000px;
-  height: 800px;
+  width: var(--expanded-width);
+  height: var(--expanded-height);
+  
+  /* Assurons-nous que la fenêtre reste dans les limites de l'écran */
+  max-width: 90vw;
+  max-height: 90vh;
   
   @media (max-width: 768px) {
     width: 100%;
@@ -421,4 +429,75 @@ body {
   30% {
     transform: translateY(-5px);
   }
+}
+
+/* Améliorations pour mobile */
+@media (max-width: 768px) {
+  .chatbot-window {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 0;
+    z-index: 1000;
+  }
+  
+  .mobile-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Pour une meilleure expérience de défilement sur iOS */
+    padding-bottom: 16px; /* Espace supplémentaire en bas pour éviter que les messages soient coupés */
+  }
+  
+  .mobile-input-container {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--chat-bg);
+    padding: 12px;
+    border-top: 1px solid var(--border-color);
+    z-index: 10;
+  }
+  
+  /* Ajustement de la taille des messages sur mobile */
+  .chatbot-message {
+    max-width: 85%;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  
+  /* Ajustement de la taille des avatars sur mobile */
+  .message-with-avatar img {
+    width: 28px;
+    height: 28px;
+  }
+  
+  /* Amélioration de l'espacement entre les messages */
+  .message-container {
+    margin-bottom: 16px;
+  }
+  
+  /* S'assurer que le bouton d'envoi est suffisamment grand pour être facilement cliquable */
+  .chatbot-send-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Améliorer la zone de saisie sur mobile */
+  .chatbot-input {
+    height: 44px;
+    font-size: 16px; /* Évite le zoom automatique sur iOS */
+    padding: 10px 16px;
+  }
+}
+
+/* Correction pour éviter les problèmes de défilement sur iOS */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }
