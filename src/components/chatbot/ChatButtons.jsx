@@ -1,9 +1,15 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 const ChatButtons = ({ buttons, onButtonClick }) => {
-  // Trier les boutons par ordre
+  const [clickedButtons, setClickedButtons] = useState(new Set());
   const sortedButtons = [...buttons].sort((a, b) => a.Order - b.Order);
   
+  const handleClick = (link, index) => {
+    setClickedButtons(prev => new Set([...prev, index]));
+    onButtonClick(link);
+  };
+
   return (
     <motion.div 
       className="flex flex-wrap gap-2 mt-1 mb-3 ml-12"
@@ -14,8 +20,14 @@ const ChatButtons = ({ buttons, onButtonClick }) => {
       {sortedButtons.map((button, index) => (
         <button
           key={index}
-          className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors text-sm font-medium"
-          onClick={() => onButtonClick(button.Link)}
+          className={`px-4 py-2 rounded-full text-sm font-medium shadow-md 
+          transition-all duration-300
+          ${clickedButtons.has(index) 
+            ? 'bg-gray-400 cursor-not-allowed' 
+            : 'bg-[#CE614A] hover:bg-[#b54d38] hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-md'
+          } text-white`}
+          onClick={() => handleClick(button.Link, index)}
+          disabled={clickedButtons.has(index)}
         >
           {button.Label}
         </button>

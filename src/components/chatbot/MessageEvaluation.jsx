@@ -45,18 +45,26 @@ const MessageEvaluation = ({ onEvaluate }) => {
       transition={{ duration: 0.2 }}
     >
       <button 
-        className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className="p-1 rounded-full"
         onClick={() => handleEvaluate(1)}
         aria-label="Réponse utile"
       >
-        <ThumbUpIcon fontSize="small" sx={{ fontSize: 16 }} className="text-gray-600 dark:text-gray-300" />
+        <ThumbUpIcon 
+          fontSize="small" 
+          sx={{ fontSize: 20 }} 
+          className="text-gray-600 dark:text-gray-300 transform transition-all ease-in-out duration-300 hover:scale-110 hover:text-green-500" 
+        />
       </button>
       <button 
-        className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className="p-1 rounded-full"
         onClick={() => handleEvaluate(0)}
         aria-label="Réponse non utile"
       >
-        <ThumbDownIcon fontSize="small" sx={{ fontSize: 16 }} className="text-gray-600 dark:text-gray-300" />
+        <ThumbDownIcon 
+          fontSize="small" 
+          sx={{ fontSize: 20 }} 
+          className="text-gray-600 dark:text-gray-300 transform transition-all ease-in-out duration-300 hover:scale-110 hover:text-red-500" 
+        />
       </button>
     </motion.div>
   );

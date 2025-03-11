@@ -74,31 +74,31 @@ const ChatInterface = () => {
     e.preventDefault();
     if (inputValue.trim() === '') return;
 
-    // Ajouter le message de l'utilisateur
     const userMessage = {
-      id: messages.length + 1,
+      id: Date.now(),
       text: inputValue,
       sender: 'user',
       timestamp: new Date()
     };
     
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
     setLastMessageEvaluated(false);
     
-    // Préparer l'historique des messages pour l'API
-    const messageHistory = messages.map(msg => ({
-      role: msg.sender === 'user' ? 'user' : 'assistant',
-      content: msg.text
-    }));
+    // Filtrer l'historique pour n'inclure que les messages avec du texte
+    const messageHistory = messages
+      .filter(msg => msg.text) // Ne prend que les messages avec du texte
+      .map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }));
     
-    // Ajouter le nouveau message de l'utilisateur
     messageHistory.push({
       role: 'user',
       content: inputValue
     });
-    
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/chat`, {
         method: 'POST',
@@ -125,7 +125,7 @@ const ChatInterface = () => {
       
       // Créer le message de réponse du bot
       const botResponse = {
-        id: messages.length + 2,
+        id: Date.now(),
         text: data.response,
         sender: 'bot',
         timestamp: new Date(),
@@ -143,7 +143,7 @@ const ChatInterface = () => {
       
       // Message d'erreur en cas d'échec
       const errorMessage = {
-        id: messages.length + 2,
+        id: Date.now(),
         text: "Désolé, je rencontre des difficultés à me connecter au serveur. Veuillez réessayer plus tard.",
         sender: 'bot',
         timestamp: new Date(),
@@ -159,6 +159,16 @@ const ChatInterface = () => {
   const handleButtonClick = async (label) => {
     setIsTyping(true);
     
+    const newMessageId = Date.now();
+    const userMessage = {
+      id: newMessageId,
+      text: label,
+      sender: 'user',
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/find_by_label`, {
         method: 'POST',
@@ -167,7 +177,11 @@ const ChatInterface = () => {
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN_OSI}`
         },
         body: JSON.stringify({
-          label: label
+          label: label,
+          historique: messages.concat(userMessage).map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text || ''
+          }))
         })
       });
       
@@ -178,20 +192,17 @@ const ChatInterface = () => {
       const data = await response.json();
       
       if (data.found && data.data) {
-        // Traiter les données reçues
         const details = data.data.details;
         
         if (details && details.Messages && details.Messages.length > 0) {
           const message = details.Messages[0];
           
-          // Traiter les bulles de texte
           if (message.Bubbles && message.Bubbles.length > 0) {
-            // Trier les bulles par ordre
             const sortedBubbles = [...message.Bubbles].sort((a, b) => a.Order - b.Order);
             
             for (const bubble of sortedBubbles) {
               const botMessage = {
-                id: messages.length + 1 + sortedBubbles.indexOf(bubble),
+                id: Date.now() + sortedBubbles.indexOf(bubble),
                 text: bubble.Text,
                 sender: 'bot',
                 timestamp: new Date()
@@ -204,11 +215,9 @@ const ChatInterface = () => {
             }
           }
           
-          // Ajouter les boutons si présents
           if (message.Buttons && message.Buttons.length > 0) {
-            const lastMessageId = messages.length + (message.Bubbles ? message.Bubbles.length : 0);
             const buttonsMessage = {
-              id: lastMessageId + 1,
+              id: Date.now(),
               sender: 'bot',
               timestamp: new Date(),
               buttons: message.Buttons.sort((a, b) => a.Order - b.Order)
@@ -219,7 +228,7 @@ const ChatInterface = () => {
         } else {
           // Fallback si la structure n'est pas comme attendue
           const botMessage = {
-            id: messages.length + 1,
+            id: Date.now(),
             text: data.data.description || "Information trouvée mais format inattendu",
             sender: 'bot',
             timestamp: new Date()
@@ -230,7 +239,7 @@ const ChatInterface = () => {
       } else {
         // Message si aucune donnée n'est trouvée
         const botMessage = {
-          id: messages.length + 1,
+          id: Date.now(),
           text: "Désolé, je n'ai pas trouvé d'information correspondant à cette demande.",
           sender: 'bot',
           timestamp: new Date()
@@ -242,7 +251,7 @@ const ChatInterface = () => {
       console.error('Erreur:', error);
       
       const errorMessage = {
-        id: messages.length + 1,
+        id: Date.now(),
         text: "Désolé, je rencontre des difficultés à récupérer cette information. Veuillez réessayer plus tard.",
         sender: 'bot',
         timestamp: new Date(),
@@ -372,25 +381,38 @@ const ChatInterface = () => {
             </div>
             
             <div className="flex-1 overflow-y-auto px-4 py-4">
-              {messages.map((message, index) => (
-                <div key={message.id}>
-                  <ChatMessage 
-                    message={message} 
-                    isLast={index === messages.length - 1}
-                  />
-                  
-                  {message.buttons && (
-                    <ChatButtons 
-                      buttons={message.buttons} 
-                      onButtonClick={handleButtonClick} 
+              {messages.map((message, index) => {
+                const messageKey = `${message.id}-${index}`; // Création d'une clé unique combinant id et index
+                
+                return (
+                  <motion.div 
+                    key={messageKey}
+                    className="message-container"
+                  >
+                    <ChatMessage 
+                      message={message} 
+                      isLast={index === messages.length - 1}
                     />
-                  )}
-                  
-                  {message.needsEvaluation && index === messages.length - 1 && !lastMessageEvaluated && (
-                    <MessageEvaluation onEvaluate={handleEvaluateResponse} />
-                  )}
-                </div>
-              ))}
+                    
+                    {message.buttons && (
+                      <ChatButtons 
+                        key={`buttons-${messageKey}`}
+                        buttons={message.buttons} 
+                        onButtonClick={handleButtonClick} 
+                      />
+                    )}
+                    
+                    {message.needsEvaluation && 
+                     index === messages.length - 1 && 
+                     !lastMessageEvaluated && (
+                      <MessageEvaluation 
+                        key={`eval-${messageKey}`}
+                        onEvaluate={handleEvaluateResponse} 
+                      />
+                    )}
+                  </motion.div>
+                );
+              })}
               
               {isTyping && (
                 <div className="message-with-avatar">
