@@ -1,7 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from '@/context/ThemeContext';
-import ThemeToggle from '@/components/ThemeToggle';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,8 +11,8 @@ export const metadata = {
   title: "OSI - Chatbot de l'offre de services informatique",
   description: "Assistant conversationnel pour l'offre de services informatique d'Administration Centrale",
   icons: {
-    icon: '/Osi.png',
-    apple: '/Osi.png',
+    icon: '/osi_favicon.png',
+    apple: '/osi_favicon.png',
   },
 };
 
