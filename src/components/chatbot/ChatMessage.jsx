@@ -118,30 +118,18 @@ const ChatMessage = ({ message, isLast }) => {
     
     return (
       <motion.div 
-        className={`message-with-avatar mb-2`}
+        className="flex justify-start mb-2 ml-12"
         initial="hidden"
         animate="visible"
         variants={messageVariants}
         transition={{ duration: 0.3, delay: 0.1 }}
       >
-        {message.sender === 'bot' && (
-          <img 
-            src="/Osi.png" 
-            alt="OSI Avatar" 
-            width="32" 
-            height="25" 
-            className="chatbot-avatar"
-            style={{ objectFit: 'contain' }}
-          />
-        )}
-        <div className={`chatbot-message ${message.sender}`}>
-          <img 
-            src={message.image} 
-            alt="Image" 
-            className="max-w-full rounded-lg"
-          />
-          <span className="message-timestamp">{formatTime()}</span>
-        </div>
+        <img 
+          src={message.image} 
+          alt="Image" 
+          className="max-w-[80%] rounded-lg"
+          style={{ maxHeight: '300px', objectFit: 'contain' }}
+        />
       </motion.div>
     );
   };
@@ -151,32 +139,20 @@ const ChatMessage = ({ message, isLast }) => {
     
     return (
       <motion.div 
-        className={`message-with-avatar mb-2`}
+        className="flex justify-start mb-2 ml-12"
         initial="hidden"
         animate="visible"
         variants={messageVariants}
         transition={{ duration: 0.3, delay: 0.2 }}
       >
-        {message.sender === 'bot' && (
-          <img 
-            src="/Osi.png" 
-            alt="OSI Avatar" 
-            width="32" 
-            height="25" 
-            className="chatbot-avatar"
-            style={{ objectFit: 'contain' }}
-          />
-        )}
-        <div className={`chatbot-message ${message.sender}`}>
-          <video 
-            controls
-            className="max-w-full rounded-lg"
-          >
-            <source src={message.video} />
-            Votre navigateur ne supporte pas la lecture de vidéos.
-          </video>
-          <span className="message-timestamp">{formatTime()}</span>
-        </div>
+        <video 
+          controls
+          className="max-w-[80%] rounded-lg"
+          style={{ maxHeight: '300px' }}
+        >
+          <source src={message.video} />
+          Votre navigateur ne supporte pas la lecture de vidéos.
+        </video>
       </motion.div>
     );
   };

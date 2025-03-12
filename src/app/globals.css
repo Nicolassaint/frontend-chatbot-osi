@@ -501,3 +501,19 @@ body {
 .overflow-y-auto {
   -webkit-overflow-scrolling: touch;
 }
+
+/* Styles pour les médias du chat */
+.chatbot-window video,
+.chatbot-window img {
+  max-width: 80%;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .chatbot-window video,
+  .chatbot-window img {
+    max-width: 90%;
+    max-height: 250px;
+  }
+}
