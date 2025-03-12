@@ -1,11 +1,48 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
+import { useState, useEffect } from 'react';
 
 const ChatMessage = ({ message, isLast }) => {
+  const [fontSize, setFontSize] = useState('1rem');
+  const [padding, setPadding] = useState('8px 12px');
+  const [timestampSize, setTimestampSize] = useState('0.7rem');
+
+  useEffect(() => {
+    const adjustMessageSize = () => {
+      const viewportHeight = window.innerHeight;
+      
+      if (viewportHeight <= 1000) {
+        setFontSize('0.875rem');
+        setPadding('6px 10px');
+        setTimestampSize('0.625rem');
+      } else {
+        setFontSize('1rem');
+        setPadding('8px 12px');
+        setTimestampSize('0.7rem');
+      }
+    };
+
+    adjustMessageSize();
+    window.addEventListener('resize', adjustMessageSize);
+    return () => window.removeEventListener('resize', adjustMessageSize);
+  }, []);
+
+  const messageStyle = {
+    fontSize: fontSize,
+    padding: padding,
+    lineHeight: '1.4',
+  };
+
   const messageVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 }
+  };
+
+  const timestampStyle = {
+    fontSize: timestampSize,
+    opacity: 0.7,
+    marginTop: '2px',
   };
 
   const formatTime = () => {
@@ -16,13 +53,12 @@ const ChatMessage = ({ message, isLast }) => {
     });
   };
 
-  // Fonction pour rendre le contenu texte avec Markdown
   const renderTextContent = () => {
     if (!message.text) return null;
     
     return (
       <motion.div 
-        className={`message-with-avatar mb-2`}
+        className={`message-with-avatar mb-1`}
         initial="hidden"
         animate="visible"
         variants={messageVariants}
@@ -32,13 +68,16 @@ const ChatMessage = ({ message, isLast }) => {
           <img 
             src="/Osi.png" 
             alt="OSI Avatar" 
-            width="32" 
-            height="25" 
+            width="28"
+            height="22" 
             className="chatbot-avatar"
             style={{ objectFit: 'contain' }}
           />
         )}
-        <div className={`chatbot-message ${message.sender} ${message.isError ? 'error' : ''}`}>
+        <div 
+          className={`chatbot-message ${message.sender} ${message.isError ? 'error' : ''}`}
+          style={messageStyle}
+        >
           <ReactMarkdown
             components={{
               a: ({ node, ...props }) => (
@@ -47,10 +86,11 @@ const ChatMessage = ({ message, isLast }) => {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:text-blue-600 underline break-words"
+                  style={{ fontSize: fontSize }}
                 />
               ),
               p: ({ node, ...props }) => (
-                <p {...props} className="break-words" />
+                <p {...props} className="break-words" style={{ margin: '0' }} />
               ),
             }}
           >
@@ -58,20 +98,21 @@ const ChatMessage = ({ message, isLast }) => {
           </ReactMarkdown>
           
           {message.list && (
-            <ul className="list-disc pl-5 mt-2">
+            <ul className="list-disc pl-4 mt-1">
               {message.list.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index} style={{ fontSize: fontSize }}>{item}</li>
               ))}
             </ul>
           )}
           
-          <span className="message-timestamp">{formatTime()}</span>
+          <span className="message-timestamp" style={timestampStyle}>
+            {formatTime()}
+          </span>
         </div>
       </motion.div>
     );
   };
 
-  // Fonction pour rendre l'image
   const renderImageContent = () => {
     if (!message.image) return null;
     
@@ -105,7 +146,6 @@ const ChatMessage = ({ message, isLast }) => {
     );
   };
 
-  // Fonction pour rendre la vidéo
   const renderVideoContent = () => {
     if (!message.video) return null;
     
