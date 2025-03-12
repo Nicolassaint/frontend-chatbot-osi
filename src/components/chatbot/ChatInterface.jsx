@@ -54,20 +54,18 @@ const ChatInterface = () => {
     if (!isMobile()) {
       setIsExpanded(!isExpanded);
       
-      // Assurons-nous que la fenêtre agrandie reste dans les limites de l'écran
+      // Ajuster la taille en fonction de la taille de l'écran
       if (!isExpanded) {
-        // Ajuster la taille en fonction de la taille de l'écran
         const chatWindow = document.querySelector('.chatbot-window');
         if (chatWindow) {
           const viewportHeight = window.innerHeight;
           const viewportWidth = window.innerWidth;
           
-          // Limiter la hauteur à 80% de la hauteur de la fenêtre
-          const maxHeight = Math.min(800, viewportHeight * 0.8);
+          // Utiliser des valeurs relatives à la taille de l'écran
+          const maxHeight = Math.min(800, viewportHeight * 0.85);
           chatWindow.style.setProperty('--expanded-height', `${maxHeight}px`);
           
-          // Limiter la largeur à 90% de la largeur de la fenêtre
-          const maxWidth = Math.min(1000, viewportWidth * 0.9);
+          const maxWidth = Math.min(1000, viewportWidth * 0.8);
           chatWindow.style.setProperty('--expanded-width', `${maxWidth}px`);
         }
       }

@@ -135,13 +135,13 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   background-color: var(--chat-bg);
   z-index: 50;
-  width: 650px;
-  height: 600px;
+  width: min(650px, 50vw);
+  height: min(600px, 80vh);
   transition: width 0.3s ease, height 0.3s ease;
   
   /* Variables pour les dimensions en mode agrandi */
-  --expanded-width: 1000px;
-  --expanded-height: 800px;
+  --expanded-width: min(1000px, 80vw);
+  --expanded-height: min(800px, 85vh);
   
   /* Ajout des styles mobile */
   @media (max-width: 768px) {
