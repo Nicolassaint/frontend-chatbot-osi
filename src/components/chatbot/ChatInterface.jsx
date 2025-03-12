@@ -245,16 +245,6 @@ const ChatInterface = () => {
   const handleButtonClick = async (label) => {
     setIsTyping(true);
     
-    const newMessageId = Date.now();
-    const userMessage = {
-      id: newMessageId,
-      text: label,
-      sender: 'user',
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/find_by_label`, {
         method: 'POST',
@@ -264,7 +254,7 @@ const ChatInterface = () => {
         },
         body: JSON.stringify({
           label: label,
-          historique: messages.concat(userMessage).map(msg => ({
+          historique: messages.map(msg => ({
             role: msg.sender === 'user' ? 'user' : 'assistant',
             content: msg.text || ''
           }))
