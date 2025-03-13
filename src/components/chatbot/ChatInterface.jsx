@@ -213,7 +213,8 @@ const ChatInterface = () => {
         sender: 'bot',
         timestamp: new Date(),
         needsEvaluation: true,
-        fromChatRoute: true
+        fromChatRoute: true,
+        conversation_id: data.conversation_id  // Stocker l'ID de conversation (message ID) retourné par l'API
       };
       
       // Ajouter des propriétés supplémentaires si elles existent
@@ -339,11 +340,13 @@ const ChatInterface = () => {
     }
   };
 
-  const handleEvaluateResponse = async (rating) => {
-    if (!conversationId) return;
+  const handleEvaluateResponse = async (rating, messageId) => {
+    // Trouver le message correspondant pour obtenir son conversation_id
+    const message = messages.find(msg => msg.id === messageId);
+    if (!message || !message.conversation_id) return;
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/evaluate_response?conversation_id=${conversationId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/evaluate_response?conversation_id=${message.conversation_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -358,16 +361,15 @@ const ChatInterface = () => {
         throw new Error('Erreur lors de l\'évaluation');
       }
       
-      // Attendre que le composant MessageEvaluation ait terminé son animation
+      // Marquer uniquement le message spécifique comme évalué
       setTimeout(() => {
-        setLastMessageEvaluated(true);
-        setMessages(prev => prev.map((msg, idx) => {
-          if (idx === prev.length - 1 && msg.needsEvaluation) {
-            return { ...msg, needsEvaluation: false };
+        setMessages(prev => prev.map(msg => {
+          if (msg.id === messageId && msg.needsEvaluation) {
+            return { ...msg, needsEvaluation: false, evaluated: true };
           }
           return msg;
         }));
-      }, 3500); // Délai légèrement supérieur à celui du composant MessageEvaluation (3000ms)
+      }, 3500);
       
     } catch (error) {
       console.error('Erreur lors de l\'évaluation:', error);
@@ -467,6 +469,13 @@ const ChatInterface = () => {
               {messages.map((message, index) => {
                 const messageKey = `${message.id}-${index}`; // Création d'une clé unique combinant id et index
                 
+                // Déterminer si ce message doit afficher les boutons d'évaluation
+                const shouldShowEvaluation = message.sender === 'bot' && 
+                                            message.fromChatRoute &&
+                                            message.needsEvaluation && 
+                                            !message.evaluated &&
+                                            !message.buttons; // Ne pas afficher l'évaluation si le message a des boutons
+                
                 return (
                   <motion.div 
                     key={messageKey}
@@ -485,13 +494,11 @@ const ChatInterface = () => {
                       />
                     )}
                     
-                    {message.sender === 'bot' && 
-                     message.fromChatRoute &&
-                     message.needsEvaluation && 
-                     !lastMessageEvaluated && (
+                    {shouldShowEvaluation && (
                       <MessageEvaluation 
                         key={`eval-${messageKey}`}
-                        onEvaluate={handleEvaluateResponse} 
+                        onEvaluate={(rating) => handleEvaluateResponse(rating, message.id)} 
+                        messageId={message.id}
                       />
                     )}
                   </motion.div>

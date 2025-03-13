@@ -4,7 +4,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThankYouMessage from './ThankYouMessage';
 
-const MessageEvaluation = ({ onEvaluate }) => {
+const MessageEvaluation = ({ onEvaluate, messageId }) => {
   const [state, setState] = useState('buttons'); // 'buttons', 'thankyou', 'hidden'
   const [rating, setRating] = useState(null);
   const timeoutRef = useRef(null);
@@ -14,7 +14,7 @@ const MessageEvaluation = ({ onEvaluate }) => {
       setRating(value);
       setState('thankyou');
       
-      onEvaluate(value);
+      onEvaluate(value, messageId);
       
       timeoutRef.current = setTimeout(() => {
         setState('hidden');
