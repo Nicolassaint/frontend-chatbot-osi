@@ -493,7 +493,7 @@ const ChatInterface = () => {
                                             message.fromChatRoute &&
                                             message.needsEvaluation && 
                                             !message.evaluated &&
-                                            !message.buttons; // Ne pas afficher l'évaluation si le message a des boutons
+                                            !message.fromFindByLabelRoute; // Ne pas afficher l'évaluation pour les messages envoyés depuis un bouton
                 
                 return (
                   <motion.div 
