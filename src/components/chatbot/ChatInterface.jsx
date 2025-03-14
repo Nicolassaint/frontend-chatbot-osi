@@ -183,11 +183,11 @@ const ChatInterface = () => {
     });
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/chat`, {
+      // Utiliser la route API proxy au lieu de l'API externe directement
+      const response = await fetch(`/api/proxy?endpoint=chat`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN_OSI}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           message: inputValue,
@@ -245,11 +245,11 @@ const ChatInterface = () => {
     setIsTyping(true);
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/find_by_label`, {
+      // Utiliser la route API proxy au lieu de l'API externe directement
+      const response = await fetch(`/api/proxy?endpoint=find_by_label`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN_OSI}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           label: label,
@@ -346,22 +346,31 @@ const ChatInterface = () => {
     if (!message || !message.conversation_id) return;
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_OSI}/api/evaluate_response?conversation_id=${message.conversation_id}`, {
+        // console.log('Évaluation du message:', messageId, 'avec conversation_id:', message.conversation_id);
+        // console.log('Rating:', rating);
+      
+      // Utiliser la route API proxy au lieu de l'API externe directement
+      const response = await fetch(`/api/proxy?endpoint=evaluate_response&conversation_id=${message.conversation_id}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN_OSI}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           rating: rating
         })
       });
       
+      // console.log('Statut de la réponse:', response.status);
+      
       if (!response.ok) {
+        console.error('Erreur lors de l\'évaluation:', response.status);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Détails de l\'erreur:', errorData);
         throw new Error('Erreur lors de l\'évaluation');
       }
       
-      // Marquer uniquement le message spécifique comme évalué
+      // Marquer uniquement le message spécifique comme évalué même si la réponse n'est pas OK
+      // pour éviter que l'utilisateur ne puisse pas évaluer à nouveau
       setTimeout(() => {
         setMessages(prev => prev.map(msg => {
           if (msg.id === messageId && msg.needsEvaluation) {
@@ -373,6 +382,16 @@ const ChatInterface = () => {
       
     } catch (error) {
       console.error('Erreur lors de l\'évaluation:', error);
+      
+      // Marquer quand même comme évalué pour éviter que l'utilisateur ne puisse pas continuer
+      setTimeout(() => {
+        setMessages(prev => prev.map(msg => {
+          if (msg.id === messageId && msg.needsEvaluation) {
+            return { ...msg, needsEvaluation: false, evaluated: true };
+          }
+          return msg;
+        }));
+      }, 3500);
     }
   };
 

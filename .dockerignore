@@ -17,10 +17,15 @@ build
 # Misc
 .DS_Store
 *.pem
+# Ignorer tous les fichiers d'environnement - ils seront injectés via docker-compose
 .env*
+.env
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
 
 # Version control

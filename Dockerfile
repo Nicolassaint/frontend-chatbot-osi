@@ -13,9 +13,6 @@ RUN npm ci
 # Copie du reste des fichiers sources
 COPY . .
 
-# Copie du fichier d'environnement de production
-COPY .env.production .env
-
 # Build de l'application
 RUN npm run build
 
@@ -26,13 +23,16 @@ WORKDIR /app
 
 # Définition des variables d'environnement
 ENV NODE_ENV=production
+# Les variables d'environnement sensibles seront injectées via docker-compose
+# ou via les variables d'environnement du conteneur
 
 # Copie des fichiers nécessaires depuis l'étape de build
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.env.production ./.env
+# Ne pas copier les fichiers .env.* car ils contiennent des informations sensibles
+# Les variables d'environnement seront injectées via docker-compose
 
 # Exposition du port
 EXPOSE 3000
