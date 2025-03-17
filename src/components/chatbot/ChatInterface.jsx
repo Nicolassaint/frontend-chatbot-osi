@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import ThemeToggle from '../ThemeToggle';
+import SystemStatusIndicator from '../SystemStatusIndicator';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from './ChatMessage';
 import ChatButtons from './ChatButtons';
@@ -184,7 +185,7 @@ const ChatInterface = () => {
 
     try {
       // Utiliser la route API proxy au lieu de l'API externe directement
-      const response = await fetch(`/api/proxy?endpoint=chat`, {
+      const response = await fetch(`/api/proxy/chat?endpoint=chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -246,7 +247,7 @@ const ChatInterface = () => {
     
     try {
       // Utiliser la route API proxy au lieu de l'API externe directement
-      const response = await fetch(`/api/proxy?endpoint=find_by_label`, {
+      const response = await fetch(`/api/proxy/chat?endpoint=find_by_label`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -350,7 +351,7 @@ const ChatInterface = () => {
         // console.log('Rating:', rating);
       
       // Utiliser la route API proxy au lieu de l'API externe directement
-      const response = await fetch(`/api/proxy?endpoint=evaluate_response&conversation_id=${message.conversation_id}`, {
+      const response = await fetch(`/api/proxy/chat?endpoint=evaluate_response&conversation_id=${message.conversation_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -438,16 +439,17 @@ const ChatInterface = () => {
           >
             <div className="chatbot-header">
               <div className="flex items-center gap-2">
-              <img 
+                <img 
                   src="/Osi.png" 
                   alt="OSI Avatar" 
                   width="40" 
                   height="35" 
                   style={{ objectFit: 'contain' }}
-              />
+                />
                 <h3 className="font-medium">Offre de services informatique</h3>
               </div>
               <div className="flex items-center gap-2">
+                <SystemStatusIndicator showText={false} />
                 <ThemeToggle variant="small" />
                 {!isMobile() && (
                   <button 

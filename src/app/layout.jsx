@@ -1,6 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from '@/context/ThemeContext';
+import { SystemStatusProvider } from '@/context/SystemStatusContext';
+import Header from "@/components/Header";
+import ChatInterface from "@/components/chatbot/ChatInterface";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,7 +24,9 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body className={`${inter.variable} font-sans`}>
         <ThemeProvider>
-          {children}
+          <SystemStatusProvider>
+              {children}
+          </SystemStatusProvider>
         </ThemeProvider>
       </body>
     </html>
