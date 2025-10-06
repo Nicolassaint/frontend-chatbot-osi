@@ -81,30 +81,69 @@ const ChatMessage = ({ message, isLast }) => {
           <ReactMarkdown
             components={{
               a: ({ node, ...props }) => (
-                <a 
-                  {...props} 
-                  target="_blank" 
+                <a
+                  {...props}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:text-blue-600 underline break-words"
                   style={{ fontSize: fontSize }}
                 />
               ),
               p: ({ node, ...props }) => (
-                <p {...props} className="break-words" style={{ margin: '0' }} />
+                <p {...props} className="break-words mb-2 last:mb-0" style={{ marginTop: '0' }} />
+              ),
+              ul: ({ node, ...props }) => (
+                <ul {...props} className="list-disc pl-5 mb-2 space-y-1" style={{ fontSize: fontSize }} />
+              ),
+              ol: ({ node, ...props }) => (
+                <ol {...props} className="list-decimal pl-5 mb-2 space-y-1" style={{ fontSize: fontSize }} />
+              ),
+              li: ({ node, ...props }) => (
+                <li {...props} className="ml-0 break-words" style={{ fontSize: fontSize }} />
+              ),
+              h1: ({ node, ...props }) => (
+                <h1 {...props} className="text-xl font-bold mb-2 mt-3 first:mt-0 break-words" style={{ fontSize: `calc(${fontSize} * 1.5)` }} />
+              ),
+              h2: ({ node, ...props }) => (
+                <h2 {...props} className="text-lg font-bold mb-2 mt-2 first:mt-0 break-words" style={{ fontSize: `calc(${fontSize} * 1.25)` }} />
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 {...props} className="text-base font-semibold mb-1 mt-2 first:mt-0 break-words" style={{ fontSize: `calc(${fontSize} * 1.1)` }} />
+              ),
+              strong: ({ node, ...props }) => (
+                <strong {...props} className="font-bold" />
+              ),
+              em: ({ node, ...props }) => (
+                <em {...props} className="italic" />
+              ),
+              code: ({ node, inline, ...props }) =>
+                inline ? (
+                  <code {...props} className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm break-words" style={{ fontSize: `calc(${fontSize} * 0.9)` }} />
+                ) : (
+                  <code {...props} className="block bg-gray-200 dark:bg-gray-700 p-2 rounded my-2 text-sm overflow-x-auto" style={{ fontSize: `calc(${fontSize} * 0.9)` }} />
+                ),
+              pre: ({ node, ...props }) => (
+                <pre {...props} className="bg-gray-200 dark:bg-gray-700 p-2 rounded my-2 overflow-x-auto" />
+              ),
+              blockquote: ({ node, ...props }) => (
+                <blockquote {...props} className="border-l-4 border-gray-300 dark:border-gray-600 pl-3 my-2 italic" style={{ fontSize: fontSize }} />
+              ),
+              hr: ({ node, ...props }) => (
+                <hr {...props} className="my-3 border-gray-300 dark:border-gray-600" />
               ),
             }}
           >
             {message.text}
           </ReactMarkdown>
-          
+
           {message.list && (
-            <ul className="list-disc pl-4 mt-1">
+            <ul className="list-disc pl-5 mt-2 space-y-1">
               {message.list.map((item, index) => (
-                <li key={index} style={{ fontSize: fontSize }}>{item}</li>
+                <li key={index} className="ml-0 break-words" style={{ fontSize: fontSize }}>{item}</li>
               ))}
             </ul>
           )}
-          
+
           <span className="message-timestamp" style={timestampStyle}>
             {formatTime()}
           </span>
